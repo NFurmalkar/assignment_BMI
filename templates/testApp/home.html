@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min.css'%}">
+    <link rel="stylesheet" href="{% static 'css/main.css'%}">
+    <title>Title</title>
+</head>
+<body>
+
+<div class="row">
+    <div class="col-lg-3 col-md-3 mt-4 ">
+        <div class="border">
+            <!--card-->
+            <div class="card-header text-center">
+                <h3 class="cardheader">Check BMI</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/addBMI/">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label> Name</label>
+                        <input type="text" name="name" id="name" class="form-control mt-3" value="" required>
+                        <small id="errorName"></small>
+                    </div> 
+                    <br>
+                    <div class="form-group">
+                        <label> Gender</label>
+                        <input type="text" name="gender" id="gender" class="form-control mt-3" value=""  required>
+                        <small id="errorName"></small>
+                    </div> 
+                    <br>
+                    <div class="form-group">
+                        <label> Height</label>
+                        <input type="text" name="height" id="height" class="form-control mt-3" value="" required>
+                        <small id="errorName"></small>
+                    </div> 
+                    <br>
+
+                    <div class="form-group">
+                        <label> Weight</label>
+                        <input type="text" name="weight" id="weight" class="form-control mt-3" value="" onkeypress="checkBMI()" required>
+                        <small id="errorName"></small>
+                    </div> <br>
+                   
+                    <!-- <div class="form-group">
+                        <label> BMI</label>
+                        <input type="text" name="bmi" id="bmi" class="form-control mt-3" value=""  required>
+                        <small id="errorName"></small>
+                    </div> 
+                    <br> -->
+                    <div class="d-grid gap-2 col-4 mx-auto">
+                        <button type="submit" class="btn btn-outline-primary ">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-------Table List-->
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <div class="col-lg-8 mt-2" style="margin-left: auto;">
+
+        <div style="margin-top: 12px;">
+            {% for message in messages %}
+            <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div>
+            <a href="/logout" class="btn btn-danger">logout</a>
+        </div>
+
+        <table class="table table-hover fw-bold border border-bottom-0 text-dark mt-3">
+            <th>ID</th>
+            <th>Name</th>
+            <th>Gender</th>
+            <th>Height</th>
+            <th>Weight</th>
+            <th>BMI</th>
+            <th>Update</th>
+            <th>Delete</th>
+            {% for i in data reversed %}
+            <tr class="">
+                <td>{{forloop.counter}}</td>
+                <td>{{i.name}}</td>
+                <td>{{i.gender}}</td>
+                <td>{{i.height}}</td>
+                <td>{{i.weight}}</td>
+                <td>{{i.bmi|slice:"0:6"}}</td>
+                <td><a href="#" data-bs-toggle="modal" data-bs-target="#exampleModal-{{i.id}}" data-bs-whatever="@mdo" class="btn btn-success">Update</a> </td>
+                <td><a href="/deleteBMI/{{i.id}}/"  class="btn btn-danger">Delete</a> </td>
+            </tr>
+
+            <!-----Model for Update -->
+            <div class="modal fade" id="exampleModal-{{i.id}}" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Update Book{{i.id}}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="POST" id="myForm" action="/updateBMI/{{i.id}}/">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label> Name</label>
+                                    <input type="text" name="name" id="name" class="form-control mt-3" value="{{i.name}}" required>
+                                    <small id="errorName"></small>
+                                </div> 
+                                <br>
+                                <div class="form-group">
+                                    <label> Gender</label>
+                                    <input type="text" name="gender" id="gender" class="form-control mt-3" value="{{i.gender}}"  required>
+                                    <small id="errorName"></small>
+                                </div> 
+                                <br>
+                                <div class="form-group">
+                                    <label> Height</label>
+                                    <input type="text" name="height" id="height" class="form-control mt-3" value="{{i.height}}" required>
+                                    <small id="errorName"></small>
+                                </div> 
+                                <br>
+            
+                                <div class="form-group">
+                                    <label> Weight</label>
+                                    <input type="text" name="weight" id="weight" class="form-control mt-3" value="{{i.weight}}" required>
+                                    <small id="errorName"></small>
+                                </div> <br>
+                                
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">Update</button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!----Wnd update Model -->
+            {% endfor %}
+        </table>
+
+    </div>
+
+</div>
+
+</body>
+<script src="{% static 'bootstrap/bootstrap.min.js'%}"> </script>
+<script src="{% static 'bootstrap/jquery.js'%}"> </script>
+<script src="{% static 'bootstrap/popper.js'%}"> </script>
+<script src="{% static 'myjs/main.js'%}"> </script>
+
+<script>
+    isTrue = true;
+
+    function checkBMI()
+    {
+        var BMI;
+        height = +document.getElementById("weight").value;
+        weight = +document.getElementById("weight").value;
+        console.log("BMI","height "+height,+" "+"weight:",weight,typeof(height));
+        BMI = weight/height;
+        console.log("BMI",BMI);
+        document.getElementById("bmi").value = BMI;
+    }
+    
+
+
+
+
+
+
+</script>
+</html>

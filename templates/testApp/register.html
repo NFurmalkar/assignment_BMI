@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min.css'%}">
+    <link rel="stylesheet" href="{% static 'css/main.css'%}">
+    <title>Title</title>
+</head>
+<body>
+
+<div class="row">
+    <div class="col-lg-3 col-md-3 mt-4 ">
+        <div class="border">
+            <!--card-->
+            <div class="card-header text-center">
+                <h3 class="cardheader">Register</h3>
+            </div>
+            {% if messages %}
+            <div style="margin-top: -12px;">
+                {% for message in messages %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                     {{ message }}
+                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <div class="card-body">
+                <form method="POST" id="formId" action="">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+
+                        <label> Email </label>
+                        <input type="text" name="email" id="email" class="form-control mt-3" value="" required>
+                        <span id="errorEmail" class="text-danger"></span>
+                    </div> <br>
+
+                    <div class="form-group">
+
+                        <label> Password </label>
+                        <input type="password" name="password" id="password" class="form-control mt-3" value="" required>
+                        <span id="errorpassword" class="text-danger"></span>
+                    </div> <br>
+
+                    <div class="form-group">
+
+                        <label> OTP </label>
+                        <input type="text" class="form-control mt-3" placeholder="Enter OTP" name="otp" id="otp" required>
+                        <span id="errorOTP" class="text-danger"></span>
+
+                        <div class="col-lg-6 col-md-3 col-sm-3 col-12">
+                            <button type="button" class="btn btn-success" id="otpBtn" onclick="getOTP()">Get OTP</button>
+                        </div>
+                    </div> <br>
+
+                    <div class="d-grid gap-2 col-4 mt-3">
+                        <a href="/login">Login</a>
+                    </div>
+
+                    
+                    <br>
+                    <div class="d-grid gap-2 col-4 mx-auto">
+                        <button type="submit" onclick="submitForm()" id="submitBtn" class="btn btn-outline-primary ">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+</body>
+<script src="{% static 'bootstrap/bootstrap.min.js'%}"> </script>
+<script src="{% static 'bootstrap/jquery.js'%}"> </script>
+<script src="{% static 'bootstrap/popper.js'%}"> </script>
+<script src="{% static 'myjs/main.js'%}"> </script>
+
+<script>
+    // GET OTP Using Ajax call
+    var ServerOTP = ""
+    function getOTP()
+    {
+        var email = document.getElementById("email").value;
+        if(email == "" || email == null)
+        {
+            console.log("True if ");
+            document.getElementById("errorEmail").innerText = "Email Required"
+            // var otpBtn = document.getElementById("otpBtn");
+            // //otpBtn.setAttribute('disabled',true);
+            return false;
+        }
+        else
+        {
+            document.getElementById("errorEmail").innerText = ""
+            
+        }
+        if(email)
+        {
+            var email = document.getElementById("email").value;
+            var csrf = document.getElementsByName("csrfmiddlewaretoken")[0].value;
+            console.log("emal:",email);
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST","/get-OTP/",true);
+            xhr.responseType = "json"
+            xhr.onload = function(){
+                if(xhr.status == 200)
+                {
+                    console.log("Success");
+                    var otp = xhr.response.otp;
+                    var errorMsg = xhr.response.errorMessage;
+                    console.log("otp--",otp);
+                    ServerOTP = otp;
+                    if(errorMsg)
+                    {
+                        console.log(errorMsg)
+                        document.getElementById("errorEmail").innerText = errorMsg;
+                    }
+                }   
+                else
+                {
+                    console.log("errors");
+                }
+
+            }
+            myData = {"email":email}
+            xhr.setRequestHeader('X-CSRFToken',csrf)
+            xhr.setRequestHeader('content-type','applcation/json');
+            xhr.send(JSON.stringify(myData));
+        }
+    }
+
+    function submitForm()
+    {
+        var formId = document.getElementById("formId");
+        var otp = document.getElementById("otp").value;
+        var email = document.getElementById("email").value;
+        var password = document.getElementById("password").value;
+        if(ServerOTP=="" || ServerOTP=="None")
+        {
+            document.getElementById("errorOTP").innerText = "Enter Otp";
+            return false;
+        }
+        if(email=="" || email=="None")
+        {
+            document.getElementById("errorEmail").innerText = "Field Required";
+            return false;
+        }
+        if(password=="" || password=="None")
+        {
+            document.getElementById("errorpassword").innerText = "Enter Otp";
+            return false;
+        }
+        if(ServerOTP != otp)
+        {
+            // var submitBtn = document.getElementById("submitBtn");
+            // submitBtn.setAttribute('disabled',true);
+            document.getElementById("errorOTP").innerText = "Invalid Otp";
+            return false;
+        }
+        formId.submit();
+
+    }
+
+    
+
+
+
+</script>
+</html>
